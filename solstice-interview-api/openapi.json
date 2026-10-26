@@ -1150,6 +1150,1190 @@
         ]
       }
     },
+    "/api/v1/resumes": {
+      "post": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-01\n\nUploads a PDF or DOCX resume for the signed-in user. The maximum file size is 5 MB.",
+        "operationId": "uploadResume",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Backend resume 2026"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload a resume",
+        "tags": [
+          "Resumes"
+        ]
+      },
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-02\n\nReturns the signed-in user's resumes in a paginated envelope.",
+        "operationId": "listResumes",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number starting at 1",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of records per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ResumeResponseDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List resumes",
+        "tags": [
+          "Resumes"
+        ]
+      }
+    },
+    "/api/v1/resumes/{id}/file": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-05\n\nStreams the original file after checking that it belongs to the signed-in user.",
+        "operationId": "downloadResumeFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resume UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Download a resume file",
+        "tags": [
+          "Resumes"
+        ]
+      }
+    },
+    "/api/v1/resumes/{id}": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-02\n\nReturns one resume and its extracted text after an ownership check.",
+        "operationId": "getResume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resume UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeDetailResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a resume",
+        "tags": [
+          "Resumes"
+        ]
+      },
+      "patch": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-02\n\nRenames a resume or changes its default status.\n\n**Rules:** Setting a new default clears the old default.",
+        "operationId": "updateResume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resume UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateResumeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a resume",
+        "tags": [
+          "Resumes"
+        ]
+      },
+      "delete": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-04\n\nDeletes the resume and its original file. Past matches remain available.",
+        "operationId": "deleteResume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Resume UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a resume",
+        "tags": [
+          "Resumes"
+        ]
+      }
+    },
+    "/api/v1/job-descriptions": {
+      "post": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-03\n\nSaves pasted job-description text for the signed-in user.",
+        "operationId": "createJobDescription",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobDescriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDescriptionResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save a job description",
+        "tags": [
+          "Job descriptions"
+        ]
+      },
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-03\n\nReturns the signed-in user's saved job descriptions in a paginated envelope.",
+        "operationId": "listJobDescriptions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number starting at 1",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of records per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/JobDescriptionResponseDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List job descriptions",
+        "tags": [
+          "Job descriptions"
+        ]
+      }
+    },
+    "/api/v1/job-descriptions/{id}": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-03\n\nReturns one saved job description after an ownership check.",
+        "operationId": "getJobDescription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Job description UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDescriptionResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a job description",
+        "tags": [
+          "Job descriptions"
+        ]
+      },
+      "delete": {
+        "description": "**Access:** User\n**Requirements:** FR-DOC-04\n\nDeletes the saved job description. Linked matches, interviews, and applications remain.",
+        "operationId": "deleteJobDescription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Job description UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a job description",
+        "tags": [
+          "Job descriptions"
+        ]
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-PROF-01\n\nReturns active categories for role and industry pickers. The response is intentionally not paginated because the lists are short.",
+        "operationId": "listCategories",
+        "parameters": [
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "description": "Optional category kind filter",
+            "schema": {
+              "example": "role",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CategoryKind"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List categories",
+        "tags": [
+          "Categories"
+        ]
+      }
+    },
+    "/api/v1/applications": {
+      "post": {
+        "description": "**Access:** User\n**Requirements:** FR-TRK-01, FR-TRK-02, FR-TRK-04\n\nAdds a job application for the signed-in user and optionally links it to a saved job description or company.\n\n**Rules:** `status` defaults to `saved`.",
+        "operationId": "createApplication",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add an application",
+        "tags": [
+          "Application tracker"
+        ]
+      },
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-TRK-01, FR-TRK-02, FR-TRK-03\n\nReturns the signed-in user's applications in a paginated envelope and supports filtering by status.",
+        "operationId": "listApplications",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number starting at 1",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of records per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Optional application status filter",
+            "schema": {
+              "example": "interviewing",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ApplicationStatus"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ApplicationResponseDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List tracked applications",
+        "tags": [
+          "Application tracker"
+        ]
+      }
+    },
+    "/api/v1/applications/{id}": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-TRK-01\n\nReturns one application after an ownership check.",
+        "operationId": "getApplication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Application UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get an application",
+        "tags": [
+          "Application tracker"
+        ]
+      },
+      "patch": {
+        "description": "**Access:** User\n**Requirements:** FR-TRK-01, FR-TRK-02\n\nUpdates application details or changes its status, for example `{ \"status\": \"interviewing\" }`.",
+        "operationId": "updateApplication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Application UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an application",
+        "tags": [
+          "Application tracker"
+        ]
+      },
+      "delete": {
+        "description": "**Access:** User\n**Requirements:** FR-TRK-01\n\nDeletes the signed-in user's application record.",
+        "operationId": "deleteApplication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Application UUID",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete an application",
+        "tags": [
+          "Application tracker"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "description": "**Access:** Public\n\nReturns the current liveness status and response timestamp.",
@@ -1817,6 +3001,432 @@
           "targetRoleCategoryId",
           "experienceLevel"
         ]
+      },
+      "ResumeResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Resume UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Resume title",
+            "example": "Backend resume 2026"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Uploaded file MIME type",
+            "example": "application/pdf"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "description": "Uploaded file size in bytes",
+            "example": 245760
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Whether this is the user default resume",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Upload timestamp in ISO 8601 UTC format",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "mimeType",
+          "sizeBytes",
+          "isDefault",
+          "createdAt"
+        ]
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Current page number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of records requested per page",
+            "example": 20
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of matching records",
+            "example": 42
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "total"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResumeDetailResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Resume UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Resume title",
+            "example": "Backend resume 2026"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Uploaded file MIME type",
+            "example": "application/pdf"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "description": "Uploaded file size in bytes",
+            "example": 245760
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Whether this is the user default resume",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Upload timestamp in ISO 8601 UTC format",
+            "example": "2026-10-26T13:00:00.000Z"
+          },
+          "extractedText": {
+            "type": "string",
+            "description": "Text extracted from the uploaded resume",
+            "example": "Jane Doe\nBackend Developer"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "mimeType",
+          "sizeBytes",
+          "isDefault",
+          "createdAt",
+          "extractedText"
+        ]
+      },
+      "UpdateResumeDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Updated resume title",
+            "example": "Backend resume 2026"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Whether this resume should be the default",
+            "example": true
+          }
+        }
+      },
+      "CreateJobDescriptionDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Job description title",
+            "example": "Senior Backend Engineer"
+          },
+          "companyName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Company name from the job description",
+            "example": "Shopify"
+          },
+          "text": {
+            "type": "string",
+            "description": "Pasted job description text",
+            "example": "Build reliable APIs and services for our customers."
+          }
+        },
+        "required": [
+          "title",
+          "text"
+        ]
+      },
+      "JobDescriptionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Job description UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Job description title",
+            "example": "Senior Backend Engineer"
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true,
+            "description": "Company name, when supplied",
+            "example": "Shopify"
+          },
+          "text": {
+            "type": "string",
+            "description": "Saved job description text",
+            "example": "Build reliable APIs and services for our customers."
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp in ISO 8601 UTC format",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "text",
+          "createdAt"
+        ]
+      },
+      "CategoryKind": {
+        "type": "string",
+        "enum": [
+          "role",
+          "industry"
+        ]
+      },
+      "CategoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Category UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Category display name",
+            "example": "Backend Developer"
+          },
+          "kind": {
+            "description": "Category kind",
+            "example": "role",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CategoryKind"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind"
+        ]
+      },
+      "ApplicationStatus": {
+        "type": "string",
+        "enum": [
+          "saved",
+          "applied",
+          "interviewing",
+          "offer",
+          "rejected"
+        ],
+        "description": "Application status. Defaults to saved."
+      },
+      "CreateApplicationDto": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Name of the company applied to",
+            "example": "Shopify"
+          },
+          "roleTitle": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Title of the role",
+            "example": "Junior Backend Developer"
+          },
+          "status": {
+            "description": "Application status. Defaults to saved.",
+            "example": "applied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationStatus"
+              }
+            ]
+          },
+          "appliedAt": {
+            "type": "string",
+            "description": "Date the application was submitted in ISO 8601 format",
+            "format": "date-time",
+            "example": "2026-10-26T13:00:00.000Z"
+          },
+          "jobDescriptionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Saved job description UUID",
+            "example": "650e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Company record UUID",
+            "example": "750e8400-e29b-41d4-a716-446655440000"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Free-text application notes",
+            "example": "Referred by a former colleague"
+          }
+        },
+        "required": [
+          "companyName",
+          "roleTitle"
+        ]
+      },
+      "ApplicationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Application UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "Name of the company applied to",
+            "example": "Shopify"
+          },
+          "roleTitle": {
+            "type": "string",
+            "description": "Role title",
+            "example": "Junior Backend Developer"
+          },
+          "status": {
+            "description": "Application status",
+            "example": "applied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationStatus"
+              }
+            ]
+          },
+          "appliedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Application submission date in ISO 8601 format",
+            "example": "2026-10-26T13:00:00.000Z"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Application notes",
+            "example": "Referred by a former colleague"
+          },
+          "jobDescriptionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Linked job description UUID",
+            "format": "uuid",
+            "example": "650e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Linked company UUID",
+            "format": "uuid",
+            "example": "750e8400-e29b-41d4-a716-446655440000"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp in ISO 8601 UTC format",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "companyName",
+          "roleTitle",
+          "status",
+          "createdAt"
+        ]
+      },
+      "UpdateApplicationDto": {
+        "type": "object",
+        "properties": {
+          "companyName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Name of the company applied to",
+            "example": "Shopify"
+          },
+          "roleTitle": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Title of the role",
+            "example": "Junior Backend Developer"
+          },
+          "status": {
+            "description": "Application status. Defaults to saved.",
+            "example": "applied",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationStatus"
+              }
+            ]
+          },
+          "appliedAt": {
+            "type": "string",
+            "description": "Date the application was submitted in ISO 8601 format",
+            "format": "date-time",
+            "example": "2026-10-26T13:00:00.000Z"
+          },
+          "jobDescriptionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Saved job description UUID",
+            "example": "650e8400-e29b-41d4-a716-446655440000"
+          },
+          "companyId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Company record UUID",
+            "example": "750e8400-e29b-41d4-a716-446655440000"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Free-text application notes",
+            "example": "Referred by a former colleague"
+          }
+        }
       },
       "HealthResponseDto": {
         "type": "object",
