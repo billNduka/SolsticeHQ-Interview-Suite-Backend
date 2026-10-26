@@ -1,6 +1,1179 @@
 {
   "openapi": "3.0.0",
-  "paths": {},
+  "paths": {
+    "/api/v1/users/me": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-AUTH-05\n\nReturns account information, role, and whether a password is configured.",
+        "operationId": "getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the current user",
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "description": "**Access:** User\n\nUpdates the signed-in user name or avatar URL.",
+        "operationId": "updateCurrentUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update the current user",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "description": "**Access:** User\n**Requirements:** FR-AUTH-07\n\nDeletes the account and all data, including resume files in storage. This supports Apple's App Store account-deletion requirement.",
+        "operationId": "deleteCurrentUser",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete the current user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/me/password": {
+      "patch": {
+        "description": "**Access:** User\n**Requirements:** FR-AUTH-09\n\nChanges or sets the password for the signed-in user.\n\n**Rules:** `currentPassword` is required only when the account already has a password.\n\n**Error note:** The SDD does not define a distinct wrong-current-password code; `VALIDATION_ERROR` is used for that case.",
+        "operationId": "changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change the password",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/me/identities": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-AUTH-08\n\nReturns the social sign-in providers connected to the signed-in account.\n\n**Rules:** This response is not paginated because the number of identities is small.",
+        "operationId": "listIdentities",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IdentityResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List connected identities",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/me/identities/{provider}": {
+      "delete": {
+        "description": "**Access:** User\n**Requirements:** FR-AUTH-08\n\nUnlinks a social sign-in provider from the signed-in account.\n\n**Rules:** The operation is blocked if it would leave the user with no identity and no password.",
+        "operationId": "unlinkIdentity",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "description": "Social provider to unlink",
+            "schema": {
+              "$ref": "#/components/schemas/AuthProvider"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error code(s): `INVALID_STATE`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unlink an identity",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-01\n\nCreates an account and sends a verification email.",
+        "operationId": "registerUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error code(s): `CONFLICT`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Register a user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-01\n\nConfirms an email address using a single-use token.",
+        "operationId": "verifyEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`, `INVALID_TOKEN`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verify an email",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/resend-verification": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-01a\n\nSends a new verification email and always returns success without revealing whether the email exists.",
+        "operationId": "resendVerificationEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Resend a verification email",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-05\n\nReturns access and refresh tokens with the authenticated user.",
+        "operationId": "loginWithPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `INVALID_CREDENTIALS`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `EMAIL_NOT_VERIFIED`, `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign in with a password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "description": "**Access:** Public\n\nRotates the refresh token. Reuse of an old token revokes the whole token family.",
+        "operationId": "refreshTokens",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Refresh tokens",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-06\n\nRevokes the supplied refresh token so logout works after the access token expires.",
+        "operationId": "logoutUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign out a user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-04\n\nSends a reset email and always returns success without revealing whether the email exists.",
+        "operationId": "forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Request a password reset",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-04\n\nSets a new password and revokes all refresh tokens for the user.",
+        "operationId": "resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`, `INVALID_TOKEN`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reset a password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/oauth/google": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-02, FR-AUTH-03\n\nVerifies the Google ID token and returns tokens with the user account. The audience must match one of our iOS, Android, or web client IDs. A new identity links to an existing account only when Google confirms the email is verified.",
+        "operationId": "signInWithGoogle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign in with Google",
+        "tags": [
+          "Auth: Social sign-in"
+        ]
+      }
+    },
+    "/api/v1/auth/oauth/apple": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-02, FR-AUTH-03\n\nVerifies the Apple identity token and returns tokens with the user account. Send `fullName` only on the first sign-in; Apple provides it once. A new identity links to an existing account only when Apple confirms the email is verified.",
+        "operationId": "signInWithApple",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppleSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign in with Apple",
+        "tags": [
+          "Auth: Social sign-in"
+        ]
+      }
+    },
+    "/api/v1/auth/oauth/facebook": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-02, FR-AUTH-03\n\nValidates the Facebook access token and returns tokens with the user account. The provider email may be missing. A new identity links to an existing account only when Facebook confirms the email is verified.",
+        "operationId": "signInWithFacebook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign in with Facebook",
+        "tags": [
+          "Auth: Social sign-in"
+        ]
+      }
+    },
+    "/api/v1/auth/oauth/linkedin": {
+      "post": {
+        "description": "**Access:** Public\n**Requirements:** FR-AUTH-02, FR-AUTH-03\n\nExchanges the browser authorization code with LinkedIn and returns tokens with the user account. A new identity links to an existing account only when LinkedIn confirms the email is verified.",
+        "operationId": "signInWithLinkedIn",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkedInSignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error code(s): `ACCOUNT_DISABLED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error code(s): `RATE_LIMITED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Sign in with LinkedIn",
+        "tags": [
+          "Auth: Social sign-in"
+        ]
+      }
+    },
+    "/api/v1/users/me/profile": {
+      "get": {
+        "description": "**Access:** User\n**Requirements:** FR-PROF-01, FR-PROF-02\n\nReturns the signed-in user's target role, industry, experience level, and location, including category names for display.",
+        "operationId": "getCareerProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareerProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error code(s): `NOT_FOUND`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the career profile",
+        "tags": [
+          "Career profile"
+        ]
+      },
+      "put": {
+        "description": "**Access:** User\n**Requirements:** FR-PROF-01, FR-PROF-02\n\nCreates or replaces the signed-in user's career profile for use by downstream AI features.",
+        "operationId": "upsertCareerProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertCareerProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareerProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error code(s): `VALIDATION_ERROR`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error code(s): `UNAUTHENTICATED`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save the career profile",
+        "tags": [
+          "Career profile"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "description": "**Access:** Public\n\nReturns the current liveness status and response timestamp.",
+        "operationId": "getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Check service health",
+        "tags": [
+          "System"
+        ]
+      }
+    }
+  },
   "info": {
     "title": "Solstice InterviewApp API",
     "description": "Backend for the Solstice Interview Suite",
@@ -90,6 +1263,581 @@
         "type": "http"
       }
     },
-    "schemas": {}
+    "schemas": {
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "VALIDATION_ERROR",
+          "INVALID_TOKEN",
+          "INVALID_CREDENTIALS",
+          "UNAUTHENTICATED",
+          "EMAIL_NOT_VERIFIED",
+          "ACCOUNT_DISABLED",
+          "FORBIDDEN",
+          "NOT_FOUND",
+          "CONFLICT",
+          "INVALID_STATE",
+          "NOT_ENOUGH_QUESTIONS",
+          "RATE_LIMITED",
+          "USAGE_LIMIT_REACHED",
+          "AI_UNAVAILABLE"
+        ],
+        "description": "Machine-readable error code"
+      },
+      "ErrorResponseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Machine-readable error code",
+            "example": "VALIDATION_ERROR",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message",
+            "example": "The request contains invalid fields"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Additional error details when available",
+            "example": {
+              "field": "email",
+              "reason": "Must be a valid email address"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "user",
+          "admin"
+        ],
+        "description": "Account role"
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Account email address, nullable for social-only accounts",
+            "example": "jane@example.com"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Whether the account email has been verified",
+            "example": true
+          },
+          "fullName": {
+            "type": "string",
+            "description": "User full name",
+            "example": "Jane Doe"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "Avatar image URL, when configured",
+            "example": "https://cdn.example.com/avatars/jane.jpg"
+          },
+          "role": {
+            "description": "Account role",
+            "example": "user",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Role"
+              }
+            ]
+          },
+          "hasPassword": {
+            "type": "boolean",
+            "description": "Whether the account has a password configured",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Account creation timestamp in ISO 8601 UTC format",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "emailVerified",
+          "fullName",
+          "avatarUrl",
+          "role",
+          "hasPassword",
+          "createdAt"
+        ]
+      },
+      "UpdateMeDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Updated user full name",
+            "example": "Jane Doe"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Updated avatar image URL",
+            "example": "https://cdn.example.com/avatars/jane.jpg"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Current password, required when the account already has one",
+            "example": "old-password-value"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "New account password",
+            "example": "new-password-value"
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "AuthProvider": {
+        "type": "string",
+        "enum": [
+          "google",
+          "apple",
+          "linkedin",
+          "facebook"
+        ],
+        "description": "Social sign-in provider"
+      },
+      "IdentityResponseDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "description": "Social sign-in provider",
+            "example": "google",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthProvider"
+              }
+            ]
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "description": "Email reported by the provider, when available",
+            "example": "jane@example.com"
+          },
+          "linkedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the identity was linked",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "provider",
+          "email",
+          "linkedAt"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address for the new account",
+            "example": "jane@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Account password",
+            "example": "correct-horse-battery-staple"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "User full name",
+            "example": "Jane Doe"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ]
+      },
+      "MessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable result message",
+            "example": "Verification email sent"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "VerifyEmailDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Single-use email verification token",
+            "example": "verification-token-value"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "ResendVerificationDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address to send the verification link to",
+            "example": "jane@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Account email address",
+            "example": "jane@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Account password",
+            "example": "correct-horse-battery-staple"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Short-lived access token",
+            "example": "access-token-value"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Opaque refresh token",
+            "example": "refresh-token-value"
+          },
+          "user": {
+            "description": "Authenticated user account",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "user"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Opaque refresh token",
+            "example": "refresh-token-value"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "TokenPairResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Short-lived access token",
+            "example": "access-token-value"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Rotated opaque refresh token",
+            "example": "refresh-token-value"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address for the password-reset message",
+            "example": "jane@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Single-use password-reset token",
+            "example": "reset-token-value"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "New account password",
+            "example": "correct-horse-battery-staple"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "GoogleSignInDto": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "description": "Google ID token",
+            "example": "google-id-token-value"
+          }
+        },
+        "required": [
+          "idToken"
+        ]
+      },
+      "AppleSignInDto": {
+        "type": "object",
+        "properties": {
+          "identityToken": {
+            "type": "string",
+            "description": "Apple identity token",
+            "example": "apple-identity-token-value"
+          },
+          "fullName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Full name supplied by Apple on first sign-in only",
+            "example": "Jane Doe"
+          }
+        },
+        "required": [
+          "identityToken"
+        ]
+      },
+      "FacebookSignInDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Facebook access token",
+            "example": "facebook-access-token-value"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "LinkedInSignInDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "LinkedIn authorization code",
+            "example": "linkedin-authorization-code"
+          },
+          "redirectUri": {
+            "type": "string",
+            "description": "OAuth redirect URI used for the browser flow",
+            "example": "https://app.example.com/auth/callback"
+          }
+        },
+        "required": [
+          "code",
+          "redirectUri"
+        ]
+      },
+      "ExperienceLevel": {
+        "type": "string",
+        "enum": [
+          "entry",
+          "mid",
+          "senior"
+        ],
+        "description": "Career experience level"
+      },
+      "CareerProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Profile UUID",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "targetRoleCategoryId": {
+            "type": "string",
+            "description": "Target role category UUID",
+            "format": "uuid",
+            "example": "650e8400-e29b-41d4-a716-446655440000"
+          },
+          "industryCategoryId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Industry category UUID",
+            "format": "uuid",
+            "example": "750e8400-e29b-41d4-a716-446655440000"
+          },
+          "targetRoleCategoryName": {
+            "type": "string",
+            "description": "Target role category name",
+            "example": "Backend Developer"
+          },
+          "industryCategoryName": {
+            "type": "string",
+            "nullable": true,
+            "description": "Industry category name",
+            "example": "Technology"
+          },
+          "experienceLevel": {
+            "description": "Career experience level",
+            "example": "mid",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExperienceLevel"
+              }
+            ]
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "description": "Preferred work location",
+            "example": "Toronto, Canada"
+          }
+        },
+        "required": [
+          "id",
+          "targetRoleCategoryId",
+          "targetRoleCategoryName",
+          "experienceLevel"
+        ]
+      },
+      "UpsertCareerProfileDto": {
+        "type": "object",
+        "properties": {
+          "targetRoleCategoryId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target role category UUID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "industryCategoryId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Industry category UUID",
+            "example": "650e8400-e29b-41d4-a716-446655440000"
+          },
+          "experienceLevel": {
+            "description": "Career experience level",
+            "example": "mid",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExperienceLevel"
+              }
+            ]
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Preferred work location",
+            "example": "Toronto, Canada"
+          }
+        },
+        "required": [
+          "targetRoleCategoryId",
+          "experienceLevel"
+        ]
+      },
+      "HealthResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Current service status",
+            "example": "ok"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Response timestamp in ISO 8601 UTC format",
+            "format": "date-time",
+            "example": "2026-10-26T13:00:00.000Z"
+          }
+        },
+        "required": [
+          "status",
+          "timestamp"
+        ]
+      }
+    }
   }
 }
