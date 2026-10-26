@@ -1,0 +1,33 @@
+export enum ErrorCode {
+  ValidationError = 'VALIDATION_ERROR',
+  InvalidToken = 'INVALID_TOKEN',
+  InvalidCredentials = 'INVALID_CREDENTIALS',
+  Unauthenticated = 'UNAUTHENTICATED',
+  EmailNotVerified = 'EMAIL_NOT_VERIFIED',
+  AccountDisabled = 'ACCOUNT_DISABLED',
+  Forbidden = 'FORBIDDEN',
+  NotFound = 'NOT_FOUND',
+  Conflict = 'CONFLICT',
+  InvalidState = 'INVALID_STATE',
+  NotEnoughQuestions = 'NOT_ENOUGH_QUESTIONS',
+  RateLimited = 'RATE_LIMITED',
+  UsageLimitReached = 'USAGE_LIMIT_REACHED',
+  AiUnavailable = 'AI_UNAVAILABLE',
+}
+
+export const ERROR_HTTP_STATUS: Record<ErrorCode, number> = {
+  [ErrorCode.ValidationError]: 400,
+  [ErrorCode.InvalidToken]: 400,
+  [ErrorCode.InvalidCredentials]: 401,
+  [ErrorCode.Unauthenticated]: 401,
+  [ErrorCode.EmailNotVerified]: 403,
+  [ErrorCode.AccountDisabled]: 403,
+  [ErrorCode.Forbidden]: 403,
+  [ErrorCode.NotFound]: 404,
+  [ErrorCode.Conflict]: 409,
+  [ErrorCode.InvalidState]: 409,
+  [ErrorCode.NotEnoughQuestions]: 422,
+  [ErrorCode.RateLimited]: 429,
+  [ErrorCode.UsageLimitReached]: 429,
+  [ErrorCode.AiUnavailable]: 503,
+};
