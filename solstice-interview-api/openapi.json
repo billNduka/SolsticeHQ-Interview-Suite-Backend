@@ -1,0 +1,95 @@
+{
+  "openapi": "3.0.0",
+  "paths": {},
+  "info": {
+    "title": "Solstice InterviewApp API",
+    "description": "Backend for the Solstice Interview Suite",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "System",
+      "description": "System health and readiness"
+    },
+    {
+      "name": "Auth",
+      "description": "Email and password authentication"
+    },
+    {
+      "name": "Auth: Social sign-in",
+      "description": "Social provider authentication"
+    },
+    {
+      "name": "Users",
+      "description": "User account management"
+    },
+    {
+      "name": "Career profile",
+      "description": "Career profile management"
+    },
+    {
+      "name": "Categories",
+      "description": "Public category lookup"
+    },
+    {
+      "name": "Resumes",
+      "description": "Resume management"
+    },
+    {
+      "name": "Job descriptions",
+      "description": "Saved job description management"
+    },
+    {
+      "name": "Application tracker",
+      "description": "Application tracking"
+    },
+    {
+      "name": "Skills audit",
+      "description": "Skills audit workflows"
+    },
+    {
+      "name": "Resume/JD matching",
+      "description": "Resume and job description matching"
+    },
+    {
+      "name": "Mock interviews",
+      "description": "Mock interview workflows"
+    },
+    {
+      "name": "Company lookup",
+      "description": "Company lookup and insights"
+    },
+    {
+      "name": "Dashboard",
+      "description": "Dashboard summaries"
+    },
+    {
+      "name": "Admin: Question bank",
+      "description": "Admin question bank management"
+    },
+    {
+      "name": "Admin: Categories",
+      "description": "Admin category management"
+    },
+    {
+      "name": "Admin: Skills audit templates",
+      "description": "Admin skills audit template management"
+    },
+    {
+      "name": "Admin: Users and stats",
+      "description": "Admin users and platform statistics"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {}
+  }
+}
